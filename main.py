@@ -50,7 +50,8 @@ def crearProducto():
     cursor.close()
     #Volver al listado o formulario
 
-    return render_template()
+
+    return redirect(url_for('inicio'))
 
 @app.get("/contactos")#Crear una ruta
 def listarContactos():
