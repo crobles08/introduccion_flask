@@ -1,11 +1,56 @@
-from flask import Flask, render_template
+from sqlite3 import Cursor
+from flask import Flask, render_template, request, redirect, url_for
+import mysql.connector #Conector de base de datos
 #render_template => Siempre lee la carpeta templates
+
+db = mysql.connector.connect( #Parametros
+    host = 'localhost',
+    user = 'root',
+    password = '',
+    port = 3306,
+    database = 'productos'
+)
+
+db.autocommit = True #Para que las consultas se ejecuten, que no se guarden en cache
 app = Flask(__name__)
 
 @app.get("/") #*Cuando esta en @ es un decorador (COMO HERENCIA)*
 def inicio():
-    return render_template("index.html")
+    
+    cursor = db.cursor(dictionary = True) #Abrir cursor
+    
+    cursor.execute("SELECT * FROM productos") #Ejecutar consulta
+    productos = cursor.fetchall() #Obtener todo el resultado de la consulta
+   # producto = cursor.fetchone() #Trae solo un registro (Primero que encuentra)
 
+    #print(productos[5]['nombre'])
+    #print(productos)
+
+    cursor.close()#Cerrar cursor
+    return render_template("index.html", productos = productos)
+
+@app.get("/form_crear")
+def formCrearProducto():
+    return render_template("crearProducto.html")
+
+@app.post("/form_crear")
+def crearProducto():
+    
+    #Recuperar los datos del formulario
+    nombre = request.form.get('nombre')
+    price = request.form.get('price')
+    
+    
+    #Insertar los datos en la base de datos
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO productos(nombre, price) VALUES (%s, %s)", (
+        nombre,
+        price,
+    ))
+    cursor.close()
+    #Volver al listado o formulario
+
+    return render_template()
 
 @app.get("/contactos")#Crear una ruta
 def listarContactos():
