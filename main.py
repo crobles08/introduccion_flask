@@ -1,34 +1,41 @@
 #from crypt import methods
 #from crypt import methods
+from encodings import normalize_encoding
+from operator import truediv
 from sqlite3 import Cursor
 from flask import Flask, flash, render_template, request, redirect, url_for
-import mysql.connector #Conector de base de datos
+#import mysql.connector #Conector de base de datos
 #render_template => Siempre lee la carpeta templates
+from models import productosModel
 
-db = mysql.connector.connect( #Parametros
-    host = 'localhost',
-    user = 'root',
-    password = '',
-    port = 3306,
-    database = 'productos'
-)
 
-db.autocommit = True #Para que las consultas se ejecuten, que no se guarden en cache
+
+#db = mysql.connector.connect( #Parametros
+#    host = 'localhost',
+#    user = 'root',
+#    password = '',
+#    port = 3306,
+#    database = 'productos'
+#)
+
+#db.autocommit = True #Para que las consultas se ejecuten, que no se guarden en cache
 app = Flask(__name__)
+app.secret_key = 'tl7V$6RuYS1A*5hV' #Crear la Secret key para poder ejecutar los messages
 
 @app.get("/") #*Cuando esta en @ es un decorador (COMO HERENCIA)*
 def inicio():
     
-    cursor = db.cursor(dictionary = True) #Abrir cursor
+    #cursor = db.cursor(dictionary = True) #Abrir cursor
     
-    cursor.execute("SELECT * FROM productos") #Ejecutar consulta
-    productos = cursor.fetchall() #Obtener todo el resultado de la consulta
+    #cursor.execute("SELECT * FROM productos") #Ejecutar consulta
+    #productos = cursor.fetchall() #Obtener todo el resultado de la consulta
    # producto = cursor.fetchone() #Trae solo un registro (Primero que encuentra)
 
     #print(productos[5]['nombre'])
     #print(productos)
 
-    cursor.close()#Cerrar cursor
+    #cursor.close()#Cerrar cursor
+    productos = productosModel.obtenerProductos()
     return render_template("index.html", productos = productos)
 
 @app.get("/form_crear")
@@ -42,15 +49,39 @@ def crearProducto():
     nombre = request.form.get('nombre')
     price = request.form.get('price')
     
+    is_valid = True
+
+    if nombre == "":
+        flash('El nombre es requerido')
+        is_valid = False
+
+    if price == '':
+        flash('El precio es requerido')
+        is_valid = False
+
+    
+    
+    if not price.isdigit():
+        flash('El precio es requerido')
+        is_valid = False
+    
+    if not is_valid:
+        return render_template("crearProducto.html",   
+            nombre = nombre, #Para que cuando se ponga mal los datos el input conserve los datos que ingreso
+            price = price,
+        )
+        #return 'El formulario no es valido'
+
     
     #Insertar los datos en la base de datos
-    cursor = db.cursor()
-    cursor.execute("INSERT INTO productos(nombre, price) VALUES (%s, %s)", (
-        nombre,
-        price,
-    ))
-    cursor.close()
+    #cursor = db.cursor()
+    #cursor.execute("INSERT INTO productos(nombre, price) VALUES (%s, %s)", (
+    #    nombre,
+    #    price,
+    #))
+    #cursor.close()
     #Volver al listado o formulario
+
 
     return redirect(url_for('inicio'))
 

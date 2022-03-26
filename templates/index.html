@@ -1,23 +1,11 @@
-<!DOCTYPE html> <!--Identifica la version de HTML5-->
-<html lang="es"><!--Empieza el documento html - lang = Lenguaje-->
-<head> <!--Cabecera-->
-    <meta charset="UTF-8"> <!--Caracteres especiales-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--Escala la aplicació a movil-->
-    <title>Productos</title> <!--Titulo que se muestra en la pestaña-->
+{% extends 'base.html' %} <!--D-->
 
+{% block titulo %}
+    Inicion
     <a href="{{url_for('formCrearProducto')}}"><button>CREAR PRODUCTO</button></a>
-
-    <style>
-        colgroup {
-            background-color: lightgrey;
-          }
-          col {
-            background-color: lightblue;
-          }
-    </style>
-</head>
-<body>
-    <h1>PRODUCTOS - INICIO</h1><!--La importacia del titulo según su orden-->
+{% endblock %}
+{% block contenido %}
+<h1>PRODUCTOS - INICIO</h1><!--La importacia del titulo según su orden-->
     <!--table>tr*2>td*3 Dibujar la tabla-->
     <table>
         <tr>
@@ -32,15 +20,14 @@
             <td>{{producto['id']}}</td>
             <td>{{producto['nombre']}}</td>
             <td>{{producto['price']}}</td>
-            <td ><a href="/editarProducto/{{producto['id']}}"><button>Ed</button></a></td> <!--Poner icono de ediatar-->
+            <td ><a href="/editarProducto/{{producto['id']}}"><button>Editar</button></a></td> <!--Poner icono de ediatar-->
             <td ><a href="/eliminar/{{producto['id']}}"><button>Del</button></a></td>
         </tr>
         <tr>
             
         </tr>
         {% endfor %}
-    </table>
 
-    
-</body>
-</html>
+        
+   
+        {% endblock %}
